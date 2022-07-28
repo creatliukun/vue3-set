@@ -1,7 +1,8 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <!-- <img alt="Vue logo" src="../assets/logo.png"> -->
+    <HelloWorld msg="这条数据是反的" />
+    <p>使用 v-html 渲染原生 <span v-html="rawHtml"></span></p>
   </div>
 </template>
 
@@ -13,6 +14,14 @@ export default {
   name: 'HomeView',
   components: {
     HelloWorld
+  },
+  data () {
+    return {
+      rawHtml: '<div style="color: red">这是红色</div>'
+    }
+  },
+  methods: {
+    get () {}
   }
 }
 </script>
