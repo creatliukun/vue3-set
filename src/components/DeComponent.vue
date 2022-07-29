@@ -2,7 +2,7 @@
   <div>
     {{ title }}
     <!-- 子组件通过$emit来触发父组件的函数 -->
-    <button @click="$emit('enlargeText',0.05)">子组件增加文字</button>
+    <button @click="$emit('enlargeText',0.05)">子组件增加文字大小</button>
     <!-- 子组件里面的双向绑定触发父组件 -->
     <input
       v-model="value"

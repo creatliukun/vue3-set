@@ -46,11 +46,34 @@
     <form @submit.prevent="onSubmit">提交事件不再重载页面</form>
     <button @click="onSubmitNormal">普通的事件会冒泡</button>
   </div>
+  <!-- 组件使用插槽 -->
+  <slotCompVue>
+    <!-- 插槽接受的数据,v-slot只能添加到template上 -->
+  <!-- <template v-slot:header>
+    <h5>具名插槽header</h5>
+  </template> -->
+
+  <!-- <template v-slot:default>
+    <p>匿名插槽content</p>
+  </template> -->
+
+  <template v-slot:footer>
+    <h6>具名插槽footer</h6>
+  </template>
+  <!-- 作用域插槽，父组件可以拿到子组件的值 -->
+  <template v-slot:default="slotProps">
+    <span @click="clickGetSlotProps(slotProps)">{{ slotProps.item }}</span>
+  </template>
+  </slotCompVue>
 </template>
 
 <script>
+import slotCompVue from '@/components/slotComp.vue'
 import axios from 'axios'
 export default {
+  components: {
+    slotCompVue
+  },
   data () {
     return {
       author: {
@@ -61,9 +84,8 @@ export default {
       answer: '请输入问题，最后带上`?`',
       items: [{ message: 'v-for' }, { message: '遍历数组' }],
       myObject: {
-        title: 'v-for遍历对象',
-        author: '作者',
-        publishedAt: '时间'
+        title: 'v-for遍历',
+        author: '对象'
       }
     }
   },
@@ -83,6 +105,8 @@ export default {
       // `this` 指向 vm 实例
       return this.author.books.length > 0 ? '长度大于0' : '长度不大于0'
     }
+  },
+  mounted () {
   },
 
   methods: {
@@ -124,6 +148,9 @@ export default {
     },
     onSubmitNormal () {
       console.log('onSubmitNormal')
+    },
+    clickGetSlotProps (sonProps) {
+      console.log(sonProps, 'sonProps')
     }
   }
 }

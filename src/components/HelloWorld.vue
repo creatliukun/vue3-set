@@ -64,7 +64,8 @@
       :title="post.title"
       v-model="comPSearchText"
       @enlarge-text="onEnlargeText"
-    ></DeComponentVue>
+    >
+    </DeComponentVue>
     <!-- 简化后的做法 -->
     <!-- 组件上的v-model等价于  :model-value="comPSearchText"   @update:model-value="comPSearchText = $event" -->
     <!--  @enlarge-text="postFontSize += $event" -->
@@ -111,8 +112,7 @@ export default {
       isShowTemplate: false,
       posts: [
         { id: 1, title: '父组件进行遍历' },
-        { id: 2, title: '进入到子组件中' },
-        { id: 3, title: '可以的' }
+        { id: 2, title: '进入到子组件中' }
       ],
       postFontSize: 1,
       searchText: '',
