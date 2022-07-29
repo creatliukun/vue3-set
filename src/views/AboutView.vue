@@ -31,6 +31,21 @@
       </li>
     </ul>
   </div>
+  <!-- 事件处理 -->
+  <div>
+  <!-- 访问原始的 DOM 事件 -->
+  <button @click="warn('阻止默认事件.', $event)">访问原始的 dom事件</button>
+  <!-- 多个事件处理 -->
+  <button @click="one($event), two($event)">多个事件处理</button>
+  </div>
+  <!-- 事件修饰符 -->
+  <div @click="fatherClick">
+    <!-- 阻止单击事件继续冒泡 -->
+    <a @click.stop="doThis">阻止单击事件继续冒泡</a>
+    <!-- 提交事件不再重载页面 -->
+    <form @submit.prevent="onSubmit">提交事件不再重载页面</form>
+    <button @click="onSubmitNormal">普通的事件会冒泡</button>
+  </div>
 </template>
 
 <script>
@@ -81,6 +96,34 @@ export default {
         .catch((error) => {
           this.answer = '暂时不能访问，请稍后再试. ' + error
         })
+    },
+    warn (message, event) {
+      // 现在可以访问到原生事件
+      if (event) {
+        // 阻止默认事件
+        event.preventDefault()
+      }
+      alert(message)
+    },
+    one (event) {
+    // 第一个事件处理器逻辑...
+      console.log(event, 'one')
+    },
+    two (event) {
+    // 第二个事件处理器逻辑...
+      console.log(event, 'two')
+    },
+    fatherClick () {
+      console.log('father')
+    },
+    doThis () {
+      console.log('doThis')
+    },
+    onSubmit () {
+      console.log('onSubmit')
+    },
+    onSubmitNormal () {
+      console.log('onSubmitNormal')
     }
   }
 }

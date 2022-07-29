@@ -1,5 +1,5 @@
 <template v-if="isShowTemplate">
-   <!-- <template> 元素上使用 v-if 条件渲染分组 -->
+  <!-- <template> 元素上使用 v-if 条件渲染分组 -->
   <div>
     <!-- 在模板中处理数据  -->
     <div>{{ msg.split('').reverse().join('') }}</div>
@@ -51,17 +51,42 @@
   <div>
     <h5 v-if="isShow">条件渲染v-if</h5>
     <h5 v-else>条件渲染v-else</h5>
-    <h4 v-show="isShow">条件渲染v-show是被css属性display:none处理了,元素还保留在页面里面</h4>
+    <h4 v-show="isShow">
+      条件渲染v-show是被css属性display:none处理了,元素还保留在页面里面
+    </h4>
+  </div>
+  <!-- 组件 -->
+  <div id="blog-posts-demo" :style="{ fontSize: postFontSize + 'em' }">
+     <!-- 在组件上使用 v-model -->
+    <DeComponentVue
+      v-for="post in posts"
+      :key="post.id"
+      :title="post.title"
+      v-model="comPSearchText"
+      @enlarge-text="onEnlargeText"
+    ></DeComponentVue>
+    <!-- 简化后的做法 -->
+    <!-- 组件上的v-model等价于  :model-value="comPSearchText"   @update:model-value="comPSearchText = $event" -->
+    <!--  @enlarge-text="postFontSize += $event" -->
+
+    <!-- 自定义事件也可以用于创建支持 v-model 的自定义输入组件。 -->
+    <input v-model="searchText" />
+    <!--v-model="searchText"等价于:value="searchText" @input="searchText = $event.target.value"  -->
+    <input :value="searchText" @input="searchText = $event.target.value" />
   </div>
 </template>
 
 <script>
 // 防抖和节流，为了使组件实例彼此独立，可以在生命周期钩子的 created 里添加防抖函数，移除组件时，取消防抖函数
 import _ from 'lodash'
+import DeComponentVue from './DeComponent.vue'
 export default {
   name: 'HelloWorld',
   props: {
     msg: String
+  },
+  components: {
+    DeComponentVue
   },
   data () {
     return {
@@ -83,7 +108,15 @@ export default {
         fontSize: '13px'
       },
       isShow: true,
-      isShowTemplate: false
+      isShowTemplate: false,
+      posts: [
+        { id: 1, title: '父组件进行遍历' },
+        { id: 2, title: '进入到子组件中' },
+        { id: 3, title: '可以的' }
+      ],
+      postFontSize: 1,
+      searchText: '',
+      comPSearchText: ''
     }
   },
   computed: {
@@ -95,17 +128,41 @@ export default {
       }
     }
   },
+  beforeCreate () {
+    console.log('父组件beforeCreate')
+  },
   created () {
     // 使用 Lodash 实现防抖
     this.debouncedClick = _.debounce(this.click, 500)
+    console.log('父组件created')
+  },
+  beforeMount () {
+    console.log('父组件beforeMount')
+  },
+  mounted () {
+    console.log('父组件mounted')
+  },
+  beforeUpdate () {
+    console.log('父组件beforeUpdate')
+  },
+  updated () {
+    console.log('父组件updated')
+  },
+  beforeUnmount () {
+    console.log('父组件beforeUnmount')
   },
   unmounted () {
     // 移除组件时，取消定时器
     this.debouncedClick.cancel()
+    console.log('父组件unmounted')
   },
   methods: {
     click () {
       console.log('123')
+    },
+    // 通过方法来进行接受子组件的events
+    onEnlargeText (events) {
+      this.postFontSize += events
     }
   }
 }
