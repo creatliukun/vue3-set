@@ -1,9 +1,12 @@
 <template>
+  <!-- 计算属性和watch的最大区别就是watch可以处理异步的函数 -->
   <div class="about">
+    <!-- 计算属性进行渲染 -->
     <div id="computed-basics">
       <p>使用计算属性:</p>
       <span>{{ publishedBooksMessage }}</span>
     </div>
+    <!-- watch进行监听 -->
     <div id="watch-example">
       <p>
         使用监听属性发送请求:
@@ -11,6 +14,22 @@
       </p>
       <p>{{ answer }}</p>
     </div>
+  </div>
+  <!-- v-for关于 -->
+  <div>
+    <!-- v-for里面使用数组 -->
+    <ul id="array-rendering">
+      <li v-for="(item, index) in items" :key="index">
+        {{ item.message }}
+      </li>
+    </ul>
+    <!-- v-for里面使用对象 -->
+    <!-- 在遍历对象时，会按 Object.keys() 的结果遍历，但是不能保证它在不同 JavaScript 引擎下的结果都一致 -->
+    <ul id="array-rendering">
+      <li v-for="(value, index) in myObject" :key="index">
+        {{ value }}
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -24,7 +43,13 @@ export default {
         books: [1, 2, 3]
       },
       question: '',
-      answer: '请输入问题，最后带上`?`'
+      answer: '请输入问题，最后带上`?`',
+      items: [{ message: 'v-for' }, { message: '遍历数组' }],
+      myObject: {
+        title: 'v-for遍历对象',
+        author: '作者',
+        publishedAt: '时间'
+      }
     }
   },
   watch: {
@@ -50,10 +75,10 @@ export default {
       this.answer = '请求中...'
       axios
         .get('https://yesno.wtf/api')
-        .then(response => {
+        .then((response) => {
           this.answer = response.data.answer
         })
-        .catch(error => {
+        .catch((error) => {
           this.answer = '暂时不能访问，请稍后再试. ' + error
         })
     }
