@@ -161,3 +161,62 @@ counter.value++;
 console.log(counter.value); // 1
 console.log(twiceTheCounter.value); // 2
 ```
+
+## Setup 参考
+
+### 参数
+
+使用 setup 函数时，它将接收两个参数：
+
+- 1，props
+- 2，context
+
+```js
+export default {
+  props: {
+    title: String,
+  },
+  // setup 函数中的 props 是响应式的，当传入新的 prop 时，它将被更新
+  // props 是响应式的，不能使用 ES6 解构，否则就会消除 prop 的响应性
+  setup(props) {
+    // 1，props默认不能结构，如果需要解构 prop，可以在 setup 函数中使用 toRefs 函数来完成此操作：
+    const { title } = toRefs(props);
+    console.log(title.value);
+  },
+};
+```
+
+当 title 是可选参数的时候，用户没有传入 title 时，toRefs 将不会为 title 创建一个 ref。这时可以用 toRef 进行替代.没有值得时候，创建了 title 这个 ref，他的创建的的\_defaultValue 值是 undefined。当有值的时候就返回传递的值
+
+```js
+import { toRef } from 'vue'
+setup(props) {
+  const title = toRef(props, 'title')
+  console.log(title.value)
+}
+```
+
+### Context
+
+传递给 setup 函数的第二个参数是 context。context 是一个普通 JavaScript 对象，暴露了其它可能在 setup 中有用的值：
+
+```js
+export default {
+  // context 是一个普通的 JavaScript 对象，也就是说，它不是响应式的，这意味着你可以安全地对 context 使用 ES6 解构
+  //   setup(props, context) {
+  setup(props, { attrs, slots, emit, expose }) {
+    // Attribute (非响应式对象，等同于 $attrs)
+    // console.log(context.attrs);
+    // 插槽 (非响应式对象，等同于 $slots)
+    // console.log(context.slots);
+    // 触发事件 (方法，等同于 $emit)
+    // console.log(context.emit);
+    // 暴露公共 property (函数)
+    // console.log(context.expose);
+  },
+};
+```
+
+<p font="12px">
+attrs 和 slots 是有状态的对象，它们总是会随组件本身的更新而更新。这意味着你应该避免对它们进行解构，并始终以 attrs.x 或 slots.x 的方式引用 property。请注意，与 props 不同，attrs 和 slots 的 property 是非响应式的。如果你打算根据 attrs 或 slots 的更改应用副作用，那么应该在 onBeforeUpdate 生命周期钩子中执行此操作
+</p>

@@ -74,12 +74,14 @@
     <input v-model="searchText" />
     <!--v-model="searchText"等价于:value="searchText" @input="searchText = $event.target.value"  -->
     <input :value="searchText" @input="searchText = $event.target.value" />
+    <div>{{'title11'+ title11}}</div>
   </div>
 </template>
 
 <script>
 // 防抖和节流，为了使组件实例彼此独立，可以在生命周期钩子的 created 里添加防抖函数，移除组件时，取消防抖函数
 import _ from 'lodash'
+import { toRef, toRefs } from 'vue'
 import DeComponentVue from './DeComponent.vue'
 export default {
   name: 'HelloWorld',
@@ -88,6 +90,31 @@ export default {
   },
   components: {
     DeComponentVue
+  },
+  setup (props, context) {
+    const msg11 = toRef(props, 'msg')
+    const title11 = toRef(props, 'title')
+    const title = toRefs(props)
+
+    console.log(msg11.value, 'toRef-msg----')
+    console.log(title11, 'toRef-title1----')
+    console.log(title, 'toRefs-title---')
+
+    // Attribute (非响应式对象，等同于 $attrs)
+    console.log(context.attrs, 'attrs')
+
+    // 插槽 (非响应式对象，等同于 $slots)
+    console.log(context.slots, 'slots')
+
+    // 触发事件 (方法，等同于 $emit)
+    console.log(context.emit, 'emit')
+
+    // 暴露公共 property (函数)
+    console.log(context.expose, 'expose')
+    return {
+      title11,
+      msg11
+    }
   },
   data () {
     return {
@@ -111,8 +138,8 @@ export default {
       isShow: true,
       isShowTemplate: false,
       posts: [
-        { id: 1, title: '父组件进行遍历' },
-        { id: 2, title: '进入到子组件中' }
+        // { id: 1, title: '父组件进行遍历' }
+        // { id: 2, title: '进入到子组件中' }
       ],
       postFontSize: 1,
       searchText: '',
