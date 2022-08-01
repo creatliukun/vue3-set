@@ -1,15 +1,19 @@
 # vue3-study
 
 ## 安装以来项
+
 ```
 yarn install
 ```
 
 ### 运行文件
+
 ```
 yarn serve
 ```
+
 ### 默认情况下，provide/inject 绑定并不是响应式的
+
 ```
 可以通过传递一个 ref property 或 reactive 对象给 provide 来改变这种行为
 
@@ -22,4 +26,53 @@ watch: 需要所监听的元素改变后才会触发，所以刚开始的时候�
 
 setup中的provide和单独的provide可以混用，是不是意味着setup中其他的元素也可以和vue2中的一起使用呢？
 而且外面的元素的优先级比setup中的优先级要高
+```
+
+## 动态组件 & 异步组件
+
+### 在动态组件上使用 keep-alive
+
+我们之前曾经在一个多标签的界面中使用 is attribute 来切换不同的组件：
+
+```jsx
+<component :is="currentTabComponent"></component>
+// <!-- 失活的组件将会被缓存！-->
+<keep-alive>
+  <component :is="currentTabComponent"></component>
+</keep-alive>
+```
+
+### 异步组件
+
+在大型应用中，我们可能需要将应用分割成小一些的代码块，并且只在需要的时候才从服务器加载一个模块。为了实现这个效果，Vue 有一个 defineAsyncComponent 方法：
+
+```js
+const { createApp, defineAsyncComponent } = Vue;
+
+const app = createApp({});
+
+const AsyncComp = defineAsyncComponent(
+  () =>
+    new Promise((resolve, reject) => {
+      resolve({
+        template: "<div>I am async!</div>",
+      });
+    })
+);
+
+app.component("async-example", AsyncComp);
+```
+
+### 模板应用
+
+尽管存在 prop 和事件，但有时你可能仍然需要在 JavaScript 中直接访问子组件。为此，可以使用 ref attribute 为子组件或 HTML 元素指定引用 ID。
+
+```js
+<base-input ref="usernameInput"></base-input>;
+
+this.$refs.usernameInput.focusInput();
+```
+
+```warning
+$refs 只会在组件渲染完成之后生效。也就是mounted钩子函数之后才可以有效。这仅作为一个用于直接操作子元素的“逃生舱”——你应该避免在模板或计算属性中访问 $refs。
 ```

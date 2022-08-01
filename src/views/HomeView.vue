@@ -106,8 +106,6 @@ export default {
     console.log('组父组件beforeUnmount')
   },
   unmounted () {
-    // 移除组件时，取消定时器
-    this.debouncedClick.cancel()
     console.log('组父组件unmounted')
   },
 
