@@ -111,7 +111,7 @@ export default {
 
 组合式 API 上的生命周期钩子与选项式 API 的名称相同，但前缀为 on：即 mounted 看起来会像 onMounted
 
-```js
+```jsx
 import { fetchUserRepositories } from '@/api/repositories'
 import { ref, onMounted } from 'vue'
 
@@ -124,8 +124,9 @@ setup (props) {
   }
   // onMounted和普通的钩子函数mounted类似
   onMounted(getUserRepositories) // 在 `mounted` 时调用 `getUserRepositories`
-
+  // 如果 setup 返回一个对象，那么该对象的 property 以及传递给 setup 的 props 参数中的 property 就都可以在模板中访问到：
   return {
+    // 注意，从 setup 返回的 refs 在模板中访问时是被自动浅解包的，因此不应在模板中使用 .value
     repositories,
     getUserRepositories
   }
@@ -164,12 +165,12 @@ console.log(twiceTheCounter.value); // 2
 
 ## Setup 参考
 
-### 参数
-
 使用 setup 函数时，它将接收两个参数：
 
 - 1，props
 - 2，context
+
+### 参数 props
 
 ```js
 export default {
@@ -196,7 +197,7 @@ setup(props) {
 }
 ```
 
-### Context
+### 参数 Context
 
 传递给 setup 函数的第二个参数是 context。context 是一个普通 JavaScript 对象，暴露了其它可能在 setup 中有用的值：
 
@@ -220,3 +221,58 @@ export default {
 <p style="font-size:14px">
 attrs 和 slots 是有状态的对象，它们总是会随组件本身的更新而更新。这意味着你应该避免对它们进行解构，并始终以 attrs.x 或 slots.x 的方式引用 property。请注意，与 props 不同，attrs 和 slots 的 property 是非响应式的。如果你打算根据 attrs 或 slots 的更改应用副作用，那么应该在 onBeforeUpdate 生命周期钩子中执行此操作
 </p>
+
+### 访问组件的 property
+
+```js
+// 可以访问的property
+props
+attrs
+slots
+emit
+
+// 将无法访问以下组件选项：
+data
+computed
+methods
+refs (模板 ref)
+```
+
+### 使用渲染函数
+
+setup 还可以返回一个渲染函数，该函数可以直接使用在同一作用域中声明的响应式状态
+
+```js
+// import { h, ref, reactive } from "vue";
+
+// export default {
+//   setup() {
+//     const readersNumber = ref(0);
+//     const book = reactive({ title: "Vue 3 Guide" });
+//     // 请注意这里我们需要显式使用 ref 的 value
+//     return () => h("div", [readersNumber.value, book.title]);
+//   },
+// };
+```
+
+将这个组件的方法通过模板 ref 暴露给父组件时可以通过调用 expose 来解决这个问题，给它传递一个对象，其中定义的 property 将可以被外部组件实例访问 ?
+
+```js
+// import { h, ref } from "vue";
+// export default {
+//   setup(props, { expose }) {
+//     const count = ref(0);
+//     const increment = () => ++count.value;
+
+//     expose({
+//       // increment 方法现在将可以通过父组件的模板 ref 访问
+//       increment,
+//     });
+
+//     return () => h("div", count.value);
+//   },
+// };
+```
+
+### 使用 this
+在 setup() 内部，this 不是该活跃实例的引用，因为 setup() 是在解析其它组件选项之前被调用的，所以 setup() 内部的 this 的行为与其它选项中的 this 完全不同。这使得 setup() 在和其它选项式 API 一起使用时可能会导致混淆

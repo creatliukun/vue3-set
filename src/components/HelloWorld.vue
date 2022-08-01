@@ -1,4 +1,4 @@
-<template v-if="isShowTemplate">
+<template>
   <!-- <template> 元素上使用 v-if 条件渲染分组 -->
   <div>
     <!-- 在模板中处理数据  -->
@@ -71,17 +71,22 @@
     <!--  @enlarge-text="postFontSize += $event" -->
 
     <!-- 自定义事件也可以用于创建支持 v-model 的自定义输入组件。 -->
-    <input v-model="searchText" />
+    <!-- <input v-model="searchText" /> -->
     <!--v-model="searchText"等价于:value="searchText" @input="searchText = $event.target.value"  -->
-    <input :value="searchText" @input="searchText = $event.target.value" />
-    <div>{{'title11'+ title11}}</div>
+    <!-- <input :value="searchText" @input="searchText = $event.target.value" /> -->
+    <!-- <div>{{'title11'+ title11}}</div> -->
+
   </div>
+  <p>
+    模板函数的值:
+    <!-- {{increment}} -->
+  </p>
 </template>
 
 <script>
 // 防抖和节流，为了使组件实例彼此独立，可以在生命周期钩子的 created 里添加防抖函数，移除组件时，取消防抖函数
 import _ from 'lodash'
-import { toRef, toRefs } from 'vue'
+import { toRef, toRefs, h, ref } from 'vue'
 import DeComponentVue from './DeComponent.vue'
 export default {
   name: 'HelloWorld',
@@ -91,7 +96,8 @@ export default {
   components: {
     DeComponentVue
   },
-  setup (props, context) {
+  // 将context结构
+  setup (props, { expose }) {
     const msg11 = toRef(props, 'msg')
     const title11 = toRef(props, 'title')
     const title = toRefs(props)
@@ -100,21 +106,30 @@ export default {
     console.log(title11, 'toRef-title1----')
     console.log(title, 'toRefs-title---')
 
+    const count = ref(0)
+    const increment = () => ++count.value
+
+    expose({
+      // increment 方法现在将可以通过父组件的模板 ref 访问
+      increment
+    })
+
+    return () => h('div', 'return h 后这个组件就只有这个了，props没有返回')
+    // return {
+    //   title11,
+    //   msg11
+    // }
     // Attribute (非响应式对象，等同于 $attrs)
-    console.log(context.attrs, 'attrs')
+    // console.log(context.attrs, 'attrs')
 
     // 插槽 (非响应式对象，等同于 $slots)
-    console.log(context.slots, 'slots')
+    // console.log(context.slots, 'slots')
 
     // 触发事件 (方法，等同于 $emit)
-    console.log(context.emit, 'emit')
+    // console.log(context.emit, 'emit')
 
     // 暴露公共 property (函数)
-    console.log(context.expose, 'expose')
-    return {
-      title11,
-      msg11
-    }
+    // console.log(context.expose, 'expose')
   },
   data () {
     return {
@@ -136,10 +151,9 @@ export default {
         fontSize: '13px'
       },
       isShow: true,
-      isShowTemplate: false,
       posts: [
-        // { id: 1, title: '父组件进行遍历' }
-        // { id: 2, title: '进入到子组件中' }
+        { id: 1, title: '父组件进行遍历' },
+        { id: 2, title: '进入到子组件中' }
       ],
       postFontSize: 1,
       searchText: '',

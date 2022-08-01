@@ -2,8 +2,6 @@
   <div class="home">
     <!-- <img alt="Vue logo" src="../assets/logo.png"> -->
     <p>使用 v-html 渲染原生 <span v-html="rawHtml"></span></p>
-
-    <HelloWorld msg="这条数据是反的" class="father-class" />
     <button @click="changeArrLength">改变数组长度</button>
     <button @click="updateLocation11">改变位置</button>
     <div>{{todos.length}}</div>
@@ -24,6 +22,7 @@
        setup的计算属性:
       {{twiceTheCounter}}
     </p>
+    <HelloWorld msg="这条数据是反的" class="father-class" />
   </div>
 </template>
 
