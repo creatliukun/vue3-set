@@ -93,6 +93,7 @@ export default {
     // 使用 watch 选项允许我们执行异步操作 (访问一个 API)，并设置一个执行该操作的条件。这些都是计算属性无法做到的
     // 每当 question 发生变化时，该函数将会执行
     question (newQuestion, oldQuestion) {
+      console.log(newQuestion, 'newQuestion')
       if (newQuestion.indexOf('?') > -1) {
         this.getAnswer()
       }
@@ -111,6 +112,7 @@ export default {
 
   methods: {
     getAnswer () {
+      console.log(this.question, 'question')
       this.answer = '请求中...'
       axios
         .get('https://yesno.wtf/api')
