@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="home" v-if=false>
     <!-- <img alt="Vue logo" src="../assets/logo.png"> -->
     <p>使用 v-html 渲染原生 <span v-html="rawHtml"></span></p>
     <button @click="changeArrLength">改变数组长度</button>
@@ -24,12 +24,18 @@
     </p>
     <HelloWorld msg="这条数据是反的" class="father-class" />
   </div>
+  <div v-else>
+   <div v-for="(item, i) in list" :ref="el => { if (el) divs[i] = el }" :key="i">
+    {{ item }}
+  </div>
+  <div ref="rootr">这是rootr元素</div>
+  </div>
 </template>
 
 <script>
 // @ is an alias to /src
 import HelloWorld from '@/components/HelloWorld.vue'
-import { provide, reactive, ref, watch, toRefs, onMounted, computed } from 'vue'
+import { provide, reactive, ref, watch, toRefs, onMounted, computed, onBeforeUpdate, watchEffect } from 'vue'
 
 export default {
   name: 'HomeView',
@@ -45,6 +51,11 @@ export default {
     const counter = ref('1')
     // setup中使用computed监听
     const counterTwo = ref(1)
+    // 在setup中使用v-for
+    const list = reactive(['reactive', '赋值', 'setup使用v-for'])
+    const divs = ref([])
+    // 测试watchEffect
+    const rootr = ref(null)
     const twiceTheCounter = computed(() => counterTwo.value * 2)
     const geolocation = reactive({
       longitude: 90,
@@ -62,9 +73,26 @@ export default {
     watch(counter, (newValue, oldValue) => {
       console.log('setup监听counter改变的值：' + counter.value)
     })
+    watch(rootr, (newValue, oldValue) => {
+      console.log('setup监听rootr改变的值：', rootr.value, newValue, oldValue)
+    })
+    // watchEffect会执行打印，但是watch并没有执行.看打印watchEffect执行了两次,其实是因为watch进行了监听rootr改变了，也引起了副作用的执行
+    watchEffect(() => {
+      // 这个副作用在 DOM 更新之前运行，因此，模板引用还没有持有对元素的引用。
+      console.log(rootr.value) // => null
+    },
+    // 使用模板引用的侦听器应该用 flush: 'post' 选项来定义，这将在 DOM 更新后运行副作用，确保模板引用与 DOM 保持同步，并引用正确的元素
+    {
+      flush: 'post'
+    })
+    // 确保在每次更新之前重置ref
+    onBeforeUpdate(() => {
+      divs.value = []
+    })
     // 和外部的mounted类似，这个时候组件渲染完毕，调用次函数
     onMounted(() => {
-      updateLocation()
+      console.log(divs, 'divs')
+      // updateLocation()
     })
     // 如果想要setup外部的函数，模版，钩子等获取到此数据，那么就需要return出去
     return {
@@ -72,7 +100,10 @@ export default {
       geolocation,
       updateLocation,
       counter,
-      twiceTheCounter
+      twiceTheCounter,
+      list,
+      divs,
+      rootr
     }
     // provide('location', '地理位置')
     // provide('geolocation', {
