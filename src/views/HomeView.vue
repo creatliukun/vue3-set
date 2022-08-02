@@ -35,7 +35,7 @@
 <script>
 // @ is an alias to /src
 import HelloWorld from '@/components/HelloWorld.vue'
-import { provide, reactive, ref, watch, toRefs, onMounted, computed, onBeforeUpdate, watchEffect } from 'vue'
+import { provide, reactive, ref, watch, toRefs, onMounted, computed, onBeforeUpdate, watchEffect, onBeforeMount } from 'vue'
 
 export default {
   name: 'HomeView',
@@ -85,14 +85,20 @@ export default {
     {
       flush: 'post'
     })
+
     // 确保在每次更新之前重置ref
     onBeforeUpdate(() => {
+      console.log('setup onBeforeUpdate')
       divs.value = []
     })
     // 和外部的mounted类似，这个时候组件渲染完毕，调用次函数
     onMounted(() => {
+      console.log('setup onMounted')
       console.log(divs, 'divs')
       // updateLocation()
+    })
+    onBeforeMount(() => {
+      console.log('setup onBeforeMount')
     })
     // 如果想要setup外部的函数，模版，钩子等获取到此数据，那么就需要return出去
     return {
